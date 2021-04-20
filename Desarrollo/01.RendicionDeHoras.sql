@@ -1,3 +1,5 @@
+/*rendicion por dia*/
+
 delimiter $$
 DROP PROCEDURE if exists rendicion_hs_por_dia;
  	
@@ -12,9 +14,7 @@ END;
 $$
 
 
-
-	
-	
+	/*rendicion por semana*/
 	
 delimiter $$
 DROP PROCEDURE if exists rendicion_hs_por_semana;
@@ -39,6 +39,7 @@ SET ultimo_dia_semana= adddate(fecha_actual, INTERVAL 7 DAY);
 END;
 $$
 
+	/*rendicion por mes*/
 
 delimiter $$
 DROP  PROCEDURE if exists rendicion_hs_por_mes;
