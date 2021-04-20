@@ -1,34 +1,64 @@
-
-DROP PROCEDURE RendicionDeHoras_dia;
-
-
---para llamarlo pide estos parametros: legajo, proyecto, horas, fecha
-
-delimiter $$ 
-CREATE PROCEDURE RendicionDeHoras(in legajo_insert INT, in proyecto_insert int, in horas INT, IN fecha_ingresada DATE  )  
-BEGIN 
-DECLARE DONE INT DEFAULT FALSE;
- DECLARE v_participacion INT; 
- DECLARE v_legajo INT;
- DECLARE v_proyecto INT;  
- DECLARE cur_participacion CURSOR FOR SELECT id_participacion, participante, proyecto FROM participacion; 
- DECLARE CONTINUE handler FOR NOT FOUND SET done = TRUE;    
+delimiter $$
+DROP PROCEDURE if exists rendicion_hs_por_dia;
+ 	
+CREATE PROCEDURE rendicion_hs_por_dia (in id_part INT, IN horas_ingresadas int, IN fecha_Actual DATE)
  
- OPEN cur_participacion; 
- 
- lectura_de_iteracion: loop  
- fetch cur_participacion INTO v_participacion, v_legajo, v_proyecto;   
- 
- if done then   
-	leave lectura_de_iteracion; 
-END if;   
+begin
+	 
+				INSERT INTO asignacion (id_participacion, cantidad_horas, fecha)
+				VALUES(id_part, horas_ingresadas, fecha_actual);	
+			 
+END;
+$$
 
-if (legajo_insert=v_legajo AND proyecto_insert=v_proyecto ) then   
-	INSERT INTO asignacion (id_participacion, cantidad_horas, fecha)   
-    VALUES(v_participacion, horas, fecha_ingresada);  
-    
-END IF; 
-END loop;  
-close cur_participacion;
+
+
+	
+	
+	
+delimiter $$
+DROP PROCEDURE if exists rendicion_hs_por_semana;
+ 	
+CREATE PROCEDURE rendicion_hs_por_semana (in id_part INT, IN horas_ingresadas int, IN fecha_Actual DATE)
+ 
+begin
+	 
+DECLARE ultimo_dia_semana date; 
+SET ultimo_dia_semana= adddate(fecha_actual, INTERVAL 7 DAY);
+		
+			while (fecha_actual<ultimo_dia_semana) do
+	
+			
+				INSERT INTO asignacion (id_participacion, cantidad_horas, fecha)
+				VALUES(id_part, horas_ingresadas, fecha_actual);
+				
+				SET fecha_actual=ADDDATE(fecha_actual, INTERVAL 1 DAY);
+			 
+			END while;
+			 
+END;
+$$
+
+
+delimiter $$
+DROP  PROCEDURE if exists rendicion_hs_por_mes;
+CREATE PROCEDURE rendicion_hs_por_mes (in id_part INT, IN horas_ingresadas int, IN fecha_actual DATE)
+ 
+begin
+	 
+DECLARE ultimo_dia_mes DATE;	 
+SET ultimo_dia_mes= ADDDATE(fecha_actual, INTERVAL 30 DAY);
+		
+			
+			while (fecha_actual<ultimo_dia_mes) do
+		
+			
+				INSERT INTO asignacion (id_participacion, cantidad_horas, fecha)
+				VALUES(id_part, cantidad_horas, fecha_actual);
+				
+				SET fecha_actual=ADDDATE(fecha_actual, INTERVAL 1 DAY);
+			 
+			END while;
+			 
 END;
 $$
